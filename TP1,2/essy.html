@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Portefeuille</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        form, table {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        button {
+        background-color: green;
+        color: black;
+          padding: 5px 10px;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        button.delete-btn {
+            background-color: red;
+            color: white;
+        }
+
+        #transactionHistory {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        #transactionHistory li {
+            background: #eee;
+            margin-bottom: 5px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gestion de Portefeuille de Cryptomonnaies</h1>
+
+    <section>
+        <h2>Ajouter une Cryptomonnaie</h2>
+        <label for="cryptoName">Nom de la Cryptomonnaie:</label><br>
+        <input type="text" id="cryptoName" required><br>
+        <label for="cryptoAmount">Quantité:</label><br>
+        <input type="number" id="cryptoAmount" required><br>
+        <button onclick="addCrypto()">Ajouter</button>
+    </section>
+
+    <section>
+        <h2>Portefeuille</h2>
+        <table id="portfolioTable">
+            <thead>
+                <tr>
+                    <th>Cryptomonnaie</th>
+                    <th>Quantité</th>
+                    <th>Part (%)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- سيتم ملء هذا القسم ديناميكيًا -->
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h2>Historique des Transactions</h2>
+        <ul id="transactionHistory">
+            <!-- سيتم ملء هذا القسم ديناميكيًا -->
+        </ul>
+    </section>
+
+    <script>
+        let portfolio = [];
+        let transactions = [];
+
+        function addCrypto() {
+            let cryptoName = document.getElementById('cryptoName').value;
+            let cryptoAmount = parseFloat(document.getElementById('cryptoAmount').value);
+
+            if (cryptoName && cryptoAmount) {
+                addCryptocurrency(cryptoName, cryptoAmount);
+                updatePortfolioTable();
+                addTransaction(`Ajout de ${cryptoAmount} ${cryptoName}`);
+                document.getElementById('cryptoName').value = '';
+                document.getElementById('cryptoAmount').value = '';
+            } else {
+                alert('Veuillez remplir tous les champs');
+            }
+        }
+
+        function addCryptocurrency(name, amount) {
+            let crypto = portfolio.find(c => c.name === name);
+            if (crypto) {
+                crypto.amount += amount;
+            } else {
+                portfolio.push({ name, amount });
+            }
+        }
+
+        function deleteCrypto(index) {
+            let removed = portfolio.splice(index, 1);
+            if (removed.length > 0) {
+                // Remove transaction related to the removed cryptocurrency
+                transactions = transactions.filter(transaction => !transaction.includes(removed[0].name));
+                updatePortfolioTable();
+                updateTransactionHistory();  // Re-render transaction history
+            }
+        }
+
+        function updatePortfolioTable() {
+            let tableBody = document.querySelector('#portfolioTable tbody');
+            tableBody.innerHTML = '';
+
+            if (portfolio.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="4">Aucune donnée à afficher</td></tr>';
+                return;
+            }
+
+            let totalAmount = portfolio.reduce((sum, crypto) => sum + crypto.amount, 0);
+
+            portfolio.forEach((crypto, index) => {
+                let percentage = ((crypto.amount / totalAmount) * 100).toFixed(2);
+                let row = `<tr>
+                    <td>${crypto.name}</td>
+                    <td>${crypto.amount}</td>
+                    <td>${percentage}%</td>
+                    <td><button class="delete-btn" onclick="deleteCrypto(${index})">Supprimer</button></td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function addTransaction(description) {
+            transactions.push(description);
+            updateTransactionHistory();
+        }
+
+        function updateTransactionHistory() {
+            let historyList = document.getElementById('transactionHistory');
+            historyList.innerHTML = transactions.map(desc => <li>${desc}</li>).join('');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<html>
+<head>
+
+<style>
+
+
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #8a3636; /* لون الخلفية الافتراضي */
+}
+
+
+#changeColor {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+</style>
+
+
+<title> Travaux pratiques </title>
+</head>
+<body>
+   
+
+
+      
+   
+    <button id=”changeColor”>Change Background Color</button>
+        
+            
+      <script type="text/Javascript">  
+
+
+const changeColorBtn = document.getElementById('changeColor');
+const body = document.querySelector('body');
+
+changeColorBtn.addEventListener('click', function() {
+    const randomColor = getRandomColor();
+    body.style.backgroundColor = randomColor;
+});
+
+function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+
+
+
+   </script>       
+
+        
+        
+
+</body>
+</html>
